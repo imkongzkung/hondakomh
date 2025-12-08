@@ -280,31 +280,26 @@ app.get('/api/honda-news', async (req, res) => {
 
 // [GET] API สำหรับนับและดึงยอดผู้เข้าชม
 app.get('/api/visit-count', (req, res) => {
-    // 1. หา IP Address ของผู้ใช้
-    // (ถ้าอยู่บน Host จริงมักจะเป็น x-forwarded-for ถ้า localhost จะเป็น ::1)
+    // 1. ดึงค่า IP มาก่อน
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-    
-    // แปลง IP ของ Localhost (::1) ให้เป็น IPv4 ธรรมดาเพื่อความสวยงาม
+
+    // 🔴 แก้ตรงนี้: ถ้ามี IP หลายตัวคั่นด้วยจุลภาค (,) ให้ตัดเอาตัวแรกสุด
+    if (ip && ip.includes(',')) {
+        ip = ip.split(',')[0].trim();
+    }
+
+    // แปลง localhost (เผื่อไว้)
     if (ip === '::1') ip = '127.0.0.1';
 
-    // 2. พยายามบันทึก IP ลง Database (ใช้ INSERT IGNORE เพื่อข้ามถ้ามี IP ซ้ำ)
+    // 2. บันทึกลง DB (โค้ดเดิม)
     const sqlInsert = 'INSERT IGNORE INTO site_visits (ip_address) VALUES (?)';
     
     db.query(sqlInsert, [ip], (err, result) => {
-        if (err) {
-            console.error('Error recording visit:', err);
-            // ถึง Error ตอนบันทึก ก็ยังต้องทำงานต่อเพื่อส่งยอดวิวกลับไป
-        }
-
-        // 3. ดึงยอดรวมทั้งหมด (Count) ส่งกลับไป
+        // ... (ส่วนที่เหลือเหมือนเดิม) ...
         const sqlCount = 'SELECT COUNT(*) as total FROM site_visits';
         db.query(sqlCount, (err, results) => {
-            if (err) {
-                return res.status(500).json({ error: 'Database error' });
-            }
-            
-            const totalVisits = results[0].total;
-            res.json({ total_visits: totalVisits, your_ip: ip });
+            if (err) return res.status(500).json({ error: 'Database error' });
+            res.json({ total_visits: results[0].total, your_ip: ip });
         });
     });
 });
@@ -312,6 +307,7 @@ app.get('/api/visit-count', (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
+
 
 
 
