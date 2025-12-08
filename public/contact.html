@@ -205,6 +205,22 @@
         }
     })
 }
+        // --- 7. Comparison Modal Logic ---
+
+        function populateCompareDropdowns(cars) {
+            const select1 = document.getElementById('select-car-1');
+            const select2 = document.getElementById('select-car-2');
+            
+            select1.innerHTML = '<option value="">-- เลือกรุ่นรถ --</option>';
+            select2.innerHTML = '<option value="">-- เลือกรุ่นรถ --</option>';
+
+            cars.forEach(car => {
+                const option = `<option value="${car.id}">${car.model_name}</option>`;
+                select1.innerHTML += option;
+                select2.innerHTML += option;
+            });
+        }
+
         function openCompareModal() {
             document.getElementById('compare-modal').style.display = 'flex';
         }
@@ -243,4 +259,5 @@
 </body>
 
 </html>
+
 
