@@ -225,6 +225,23 @@
         }
     });
 }
+         async function fetchCars() {
+            try {
+                const response = await fetch('/api/cars');
+                allCarsData = await response.json();
+                
+                displayCars(allCarsData); 
+                populateCompareDropdowns(allCarsData);
+
+                document.getElementById('filter-body').value = 'all';
+                document.getElementById('filter-engine').value = 'all';
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('car-list').innerHTML = '<p style="text-align:center;">เกิดข้อผิดพลาดในการโหลดข้อมูล</p>';
+            }
+        }
+        
 
 
         // --- 4. Initialize ---
@@ -233,4 +250,5 @@
         fetchCars(); // เรียกโหลดข้อมูลรถด้วย ไม่งั้น dropdown จะว่างเปล่า
     </script>
 </body>
+
 </html>
