@@ -236,12 +236,9 @@
             try {
                 const response = await fetch('/api/cars');
                 allCarsData = await response.json();
-                
-                displayCars(allCarsData); 
+        
                 populateCompareDropdowns(allCarsData);
 
-                document.getElementById('filter-body').value = 'all';
-                document.getElementById('filter-engine').value = 'all';
 
             } catch (error) {
                 console.error(error);
@@ -302,6 +299,7 @@
 </body>
 
 </html>
+
 
 
 
