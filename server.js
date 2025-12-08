@@ -52,7 +52,7 @@ const db = mysql.createPool({
     host: process.env.DB_HOST || 'bkksqrrfa1pneuqlzcyc-mysql.services.clever-cloud.com',      // ถ้ามีค่าใน Cloud ให้ใช้ Cloud ถ้าไม่มีให้ใช้ localhost
     user: process.env.DB_USER || 'ugdkxrqhm2hyhcmh',
     password: process.env.DB_PASSWORD || '7bf1wZMIub8rUJcyKB3Z',
-    database: process.env.DB_NAME || 'honda_shop',
+    database: process.env.DB_NAME || 'bkksqrrfa1pneuqlzcyc',
     port: process.env.DB_PORT || 3306,
     waitForConnections: true,
     connectionLimit: 10,
@@ -313,3 +313,4 @@ app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
 
 });
+
