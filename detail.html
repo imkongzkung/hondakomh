@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายละเอียดรถยนต์ | Honda</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="detailstyle.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo-link">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Honda_Logo.svg" alt="Honda" class="logo-icon">
+        </a>
+        <a href="index.html" class="nav-menu" style="text-decoration:none; display:flex; align-items:center; gap:5px;">
+            <span>←</span> กลับหน้าหลัก
+        </a>
+    </header>
+
+    <div id="loading" style="text-align:center; margin-top:100px; font-size:18px; color:#666;">
+        กำลังโหลดข้อมูล...
+    </div>
+    
+    <div class="detail-wrapper">
+        <div class="detail-card" id="product-content" style="display:none;">
+            
+            <div class="product-image-section">
+                <img id="main-car-img" src="" alt="Car Image">
+            </div>
+
+            <div class="product-info-section">
+                
+                <div class="tags">
+                    <span class="tag body" id="spec-body">-</span>
+                    <span class="tag engine" id="spec-engine">-</span>
+                </div>
+
+                <h1 class="product-title" id="car-name">Loading...</h1>
+                <p class="product-slogan" id="car-desc">...</p>
+                <button class="btn-calc-toggle" onclick="toggleCalculator()">
+    🧮 คำนวณค่างวด / ผ่อนชำระ
+</button>
+
+<div id="calculator-box" class="calculator-box" style="display: none;">
+    
+    <div class="calc-grid">
+        <div class="form-group">
+            <label>เงินดาวน์ (%)</label>
+            <select id="calc-down" onchange="calculateLoan()">
+                <option value="0.15">15%</option>
+                <option value="0.20">20%</option>
+                <option value="0.25" selected>25%</option>
+                <option value="0.30">30%</option>
+            </select>
+            <div id="down-amount-display" style="font-size:12px; color:#cc0000; margin-top:2px;">-</div>
+        </div>
+
+        <div class="form-group">
+            <label>ระยะเวลา (ปี)</label>
+            <select id="calc-years" onchange="calculateLoan()">
+                <option value="48">4 ปี (48 งวด)</option>
+                <option value="60" selected>5 ปี (60 งวด)</option>
+                <option value="72">6 ปี (72 งวด)</option>
+                <option value="84">7 ปี (84 งวด)</option>
+            </select>
+        </div>
+
+    </div>
+
+    <div class="calc-result">
+        <div class="monthly-payment-box">
+            <span>ผ่อนเดือนละ</span>
+            <span id="monthly-val" class="big-number">0</span>
+            <span>บาท</span>
+        </div>
+    </div>
+</div>
+                <div class="price-tag" id="car-price">-</div>
+
+                <div class="specs-grid" id="specs-grid">
+                    <div class="spec-item">
+                        <small>แรงม้าสูงสุด</small>
+                        <strong id="hp-val">-</strong>
+                    </div>
+                    <div class="spec-item">
+                        <small>แรงบิดสูงสุด</small>
+                        <strong id="torque-val">-</strong>
+                    </div>
+                    <div class="spec-item">
+                        <small>อัตราสิ้นเปลือง</small>
+                        <strong id="fuel-val">-</strong>
+                    </div>
+                </div>
+
+                <div class="color-selector">
+                    <div class="color-label">เลือกสีภายนอก: <span id="color-name-display" style="color:#000; font-weight:600;">-</span></div>
+                    <div id="color-options-container" class="color-options">
+                        </div>
+                </div>
+
+                <button class="btn-main" onclick="openTestDriveModal()">จอง Test Drive</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="testDriveModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>ลงทะเบียน Test Drive</h3>
+            
+            <div class="form-group">
+                <label>ชื่อ-นามสกุล</label>
+                <input type="text" id="td-name" placeholder="กรอกชื่อ-นามสกุล">
+            </div>
+            
+            <div class="form-group">
+                <label>เบอร์โทรศัพท์</label>
+                <input type="tel" id="td-phone" placeholder="กรอกเบอร์โทรติดต่อ">
+            </div>
+            
+            <div class="form-group">
+                <label>สาขาที่สะดวก</label>
+                <select id="td-branch" onchange="updateBranchMap()">
+                    <option value="">-- เลือกสาขา --</option>
+                </select>
+                
+                <div class="map-container" id="map-wrapper">
+                    <span style="font-size:14px;">กรุณาเลือกสาขาเพื่อดูตำแหน่ง</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>วันที่นัดหมาย</label>
+                <input type="date" id="td-date">
+            </div>
+
+            <div class="form-group">
+                <label>เวลาที่สะดวก</label>
+                <select id="td-time">
+                    <option value="">-- เลือกเวลา --</option>
+                    <option value="09:00">09:00</option>
+                    <option value="10:00">10:00</option>
+                    <option value="11:00">11:00</option>
+                    <option value="13:00">13:00</option>
+                    <option value="14:00">14:00</option>
+                    <option value="15:00">15:00</option>
+                    <option value="16:00">16:00</option>
+                </select>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeTestDriveModal()">ยกเลิก</button>
+                <button class="btn-confirm" onclick="submitTestDrive()">ยืนยันการจอง</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const carId = urlParams.get('id');
+    let currentCarData = null;
+
+    async function loadCarDetail() {
+        if(!carId) {
+            alert('ไม่พบรหัสอ้างอิงรถยนต์');
+            window.location.href = 'index.html';
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/cars/${carId}`);
+            if(!res.ok) throw new Error('Car not found');
+            
+            const car = await res.json();
+            currentCarData = car;
+            renderPage(car);
+            
+            loadBranches();
+
+        } catch (err) {
+            alert('เกิดข้อผิดพลาดในการโหลดข้อมูลรถ: ' + err.message);
+            document.getElementById('loading').innerText = 'ไม่พบข้อมูล หรือระบบขัดข้อง';
+        }
+    }
+
+    async function loadBranches() {
+        try {
+            const res = await fetch('/api/branches');
+            const branches = await res.json();
+            const select = document.getElementById('td-branch');
+            
+            select.innerHTML = '<option value="">-- เลือกสาขา --</option>';
+            
+            branches.forEach(b => {
+                const option = document.createElement('option');
+                const branchName = b.branch_name || b.name; 
+                option.value = branchName; 
+                option.innerText = branchName;
+                select.appendChild(option);
+            });
+        } catch(err) {
+            alert('ไม่สามารถโหลดรายชื่อสาขาได้: ' + err.message);
+        }
+    }
+
+    function updateBranchMap() {
+        const branchName = document.getElementById('td-branch').value;
+        const mapWrapper = document.getElementById('map-wrapper');
+
+        if (branchName) {
+            const query = encodeURIComponent('ศูนย์ฮอนด้า ' + branchName);
+            mapWrapper.innerHTML = `
+                <iframe 
+                    width="100%" height="100%" frameborder="0" style="border:0"
+                    src="https://maps.google.com/maps?q=${query}&t=&z=15&ie=UTF8&iwloc=&output=embed">
+                </iframe>
+            `;
+        } else {
+            mapWrapper.innerHTML = '<span style="font-size:14px;">กรุณาเลือกสาขาเพื่อดูตำแหน่ง</span>';
+        }
+    }
+
+    function renderPage(car) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('product-content').style.display = 'grid';
+
+        document.getElementById('main-car-img').src = car.image_url;
+        document.getElementById('car-name').innerText = car.model_name;
+        document.getElementById('car-desc').innerText = car.description;
+        document.getElementById('car-price').innerText = new Intl.NumberFormat('th-TH').format(car.price) + ' บาท';
+        
+        document.getElementById('spec-body').innerText = car.body_type;
+        const engineTag = document.getElementById('spec-engine');
+        engineTag.innerText = car.engine_system;
+        if(car.engine_system === 'e:HEV') engineTag.classList.add('ehev');
+        if(car.engine_system === 'EV') engineTag.classList.add('ev');
+
+        document.getElementById('hp-val').innerText = (car.horsepower ? car.horsepower + ' PS' : '-');
+        document.getElementById('torque-val').innerText = (car.torque ? car.torque + ' Nm' : '-');
+        document.getElementById('fuel-val').innerText = (car.consumption || '-');
+
+        const colorContainer = document.getElementById('color-options-container');
+        colorContainer.innerHTML = '';
+
+        if (car.colors && car.colors.length > 0) {
+            changeColorImage(car.colors[0].image_url, car.colors[0].color_name);
+
+            car.colors.forEach((color, index) => {
+                const dot = document.createElement('div');
+                dot.className = `big-dot ${index === 0 ? 'active' : ''}`;
+                dot.style.backgroundColor = color.color_hex;
+                dot.title = color.color_name;
+                
+                dot.onclick = () => {
+                    changeColorImage(color.image_url, color.color_name);
+                    document.querySelectorAll('.big-dot').forEach(d => d.classList.remove('active'));
+                    dot.classList.add('active');
+                };
+                colorContainer.appendChild(dot);
+            });
+        } else {
+            document.getElementById('color-name-display').innerText = 'สีมาตรฐาน';
+        }
+    }
+
+    function changeColorImage(url, colorName) {
+        const img = document.getElementById('main-car-img');
+        img.style.opacity = 0;
+        img.style.transform = 'scale(0.95)';
+
+        setTimeout(() => {
+            img.src = url;
+            img.style.opacity = 1;
+            img.style.transform = 'scale(1)';
+        }, 200);
+        
+        if(colorName) document.getElementById('color-name-display').innerText = colorName;
+    }
+
+    function openTestDriveModal() {
+         const token = localStorage.getItem('token');
+         if(!token) {
+            alert('กรุณาเข้าสู่ระบบก่อนจอง'); window.location.href='login.html'; return;
+         }
+
+        document.getElementById('testDriveModal').style.display = 'flex';
+        
+        // เติมข้อมูลอัตโนมัติถ้า Login แล้ว
+        const userStr = localStorage.getItem('user');
+        if(userStr) {
+            const user = JSON.parse(userStr);
+            if(!document.getElementById('td-name').value) document.getElementById('td-name').value = user.fullname;
+            if(!document.getElementById('td-phone').value) document.getElementById('td-phone').value = user.phone; // สมมติว่าใน user object มี phone
+        }
+    }
+
+    function closeTestDriveModal() {
+        document.getElementById('testDriveModal').style.display = 'none';
+    }
+
+    // [แก้ไข] เปลี่ยนชื่อฟังก์ชันให้ตรงกับ onclick ใน HTML (submitBooking -> submitTestDrive)
+    async function submitTestDrive() {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+        Swal.fire({
+            icon: 'info',
+            title: 'กรุณาเข้าสู่ระบบ',
+            text: 'คุณต้อง Login ก่อนถึงจะจองรถได้ครับ',
+            confirmButtonText: 'ไป Login'
+        }).then((result) => {
+            if(result.isConfirmed) window.location.href = 'login.html';
+        });
+        return;
+    }
+
+    // ... (โค้ดดึงค่าจาก Input เหมือนเดิม) ...
+    const bookingData = {
+        customer_name: document.getElementById('td-name').value,
+        phone: document.getElementById('td-phone').value,
+        branch_name: document.getElementById('td-branch').value,
+        appointment_date: document.getElementById('td-date').value,
+        appointment_time: document.getElementById('td-time').value,
+        car_model: document.getElementById('car-name').innerText 
+    };
+
+    if(!bookingData.branch_name || !bookingData.appointment_date || !bookingData.appointment_time) {
+        Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเลือกสาขา วันที่ และเวลา', 'warning');
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/test-drive', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify(bookingData)
+        });
+
+        if (res.status === 401 || res.status === 403) {
+            Swal.fire('Session หมดอายุ', 'กรุณา Login ใหม่', 'error')
+                .then(() => window.location.href = 'login.html');
+            return;
+        }
+
+        const result = await res.json();
+
+        if (res.ok) {
+            // ✅ จองสำเร็จ
+            closeTestDriveModal(); // ปิด Modal เดิมก่อน
+            Swal.fire({
+                icon: 'success',
+                title: 'จองสำเร็จ!',
+                text: 'เราได้รับข้อมูลการจองของคุณแล้ว',
+                confirmButtonText: 'ตกลง'
+            });
+        } else {
+            Swal.fire('ผิดพลาด', result.message || 'จองไม่สำเร็จ', 'error');
+        }
+    } catch (err) {
+        Swal.fire('Error', err.message, 'error');
+    }
+}
+// --- 1. ฟังก์ชัน เปิด/ปิด เครื่องคิดเลข ---
+        function toggleCalculator() {
+            const box = document.getElementById('calculator-box');
+            const btn = document.querySelector('.btn-calc-toggle');
+            
+            if (box.style.display === 'none') {
+                box.style.display = 'block'; // แสดง
+                calculateLoan(); // คำนวณทันทีที่เปิด
+                btn.innerHTML = '🧮 ซ่อนเครื่องคิดเลข'; // เปลี่ยนข้อความปุ่ม
+            } else {
+                box.style.display = 'none'; // ซ่อน
+                btn.innerHTML = '🧮 คำนวณค่างวด / ผ่อนชำระ'; // คืนค่าข้อความปุ่ม
+            }
+        }
+function calculateLoan() {
+            if (!currentCarData) return;
+            const carPrice = currentCarData.price;
+            const downPercent = parseFloat(document.getElementById('calc-down').value);
+            const months = parseInt(document.getElementById('calc-years').value);
+            const interestRate = 2.59; // Fixed Rate (หรือดึงจาก input ก็ได้)
+
+            const downAmount = carPrice * downPercent;
+            const financeAmount = carPrice - downAmount;
+            const years = months / 12;
+            const totalInterest = financeAmount * (interestRate / 100) * years;
+            const totalAmount = financeAmount + totalInterest;
+            const monthlyPayment = totalAmount / months;
+
+            document.getElementById('down-amount-display').innerText = `(ดาวน์ ${new Intl.NumberFormat('th-TH').format(downAmount)} บ.)`;
+            document.getElementById('monthly-val').innerText = new Intl.NumberFormat('th-TH').format(Math.ceil(monthlyPayment));
+        }
+    loadCarDetail();
+</script>
+</body>
+</html>

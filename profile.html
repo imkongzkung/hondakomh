@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรไฟล์ของฉัน | Honda</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .container { max-width: 800px; margin: 40px auto; padding: 20px; font-family: 'Kanit'; }
+        .profile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
+        .booking-card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .booking-card h3 { margin: 0 0 10px 0; color: #cc0000; }
+        .booking-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; color: #555; }
+        .logout-btn { background: #333; color: #fff; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo-link"><img src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Honda_Logo.svg" alt="Honda" class="logo-icon"></a>
+        <a href="index.html" style="text-decoration:none; color:black;">← กลับหน้าหลัก</a>
+    </header>
+
+    <div class="container">
+        <div class="profile-header">
+            <h1 id="welcome-msg">สวัสดี...</h1>
+            <button class="logout-btn" onclick="logout()">ออกจากระบบ</button>
+        </div>
+
+        <h2>ประวัติการจอง Test Drive ของคุณ</h2>
+        <div id="booking-list">กำลังโหลดข้อมูล...</div>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if (!user) {
+            alert('กรุณาเข้าสู่ระบบก่อน');
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('welcome-msg').innerText = `สวัสดี คุณ ${user.fullname}`;
+            loadMyBookings();
+        }
+
+        async function loadMyBookings() {
+    try {
+        // 1. ดึง Token มาเตรียมไว้
+        const token = localStorage.getItem('token');
+        
+        // ถ้าไม่มี Token ให้ไล่ไป Login
+        if (!token) {
+            alert('กรุณาเข้าสู่ระบบก่อน');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        // 2. [แก้ไขจุดสำคัญ] 
+        // - ลบ ${user.id} ออกจาก URL (เรียกไปที่ /api/my-bookings เฉยๆ)
+        // - เพิ่ม headers Authorization เพื่อส่ง Token
+        const res = await fetch('/api/my-bookings', { 
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token // <--- ต้องมีบรรทัดนี้
+            }
+        });
+
+        // เช็คว่า Server ตอบอะไรกลับมา
+        if (res.status === 401 || res.status === 403) {
+            alert('Session หมดอายุ กรุณา Login ใหม่');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        if(!res.ok) {
+            // ดู Error จริงๆ ว่าคืออะไร
+            const errData = await res.json(); 
+            throw new Error(errData.message || 'Network response was not ok');
+        }
+
+        const bookings = await res.json();
+        
+        // --- ส่วนแสดงผล (เหมือนเดิม) ---
+        const list = document.getElementById('booking-list'); // ตรวจสอบว่าใน HTML มี ID นี้จริงไหม
+        if (!list) return; // กัน Error ถ้าหา Element ไม่เจอ
+
+        list.innerHTML = '';
+
+        if(bookings.length === 0) {
+            list.innerHTML = '<p style="text-align:center; color:#666;">คุณยังไม่มีประวัติการจอง</p>';
+            return;
+        }
+
+        bookings.forEach(booking => {
+            // แปลงวันที่
+            const dateObj = new Date(booking.appointment_date);
+            const dateStr = dateObj.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
+            
+            const card = document.createElement('div');
+            card.className = 'booking-card';
+            card.innerHTML = `
+                <h3>🚗 ${booking.car_model}</h3>
+                <div class="booking-info">
+                    <div><strong>สาขา:</strong> ${booking.branch_name}</div>
+                    <div><strong>วันที่:</strong> ${dateStr}</div>
+                    <div><strong>เวลา:</strong> ${booking.appointment_time}</div>
+                    <div style="margin-top:5px; color:#666; font-size:0.9em;">สถานะ: รอยืนยัน</div>
+                </div>
+            `;
+            list.appendChild(card);
+        });
+
+    } catch(err) {
+        console.error(err);
+        alert('ไม่สามารถดึงข้อมูลประวัติการจองได้: ' + err.message);
+    }
+}
+function logout() {
+    Swal.fire({
+        title: 'ออกจากระบบ?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'ใช่',
+        cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // ✅ หัวใจสำคัญ: ลบ Token ทิ้ง
+            localStorage.removeItem('token');
+            localStorage.removeItem('user'); 
+            
+            // แจ้งเตือนและรีเฟรชหน้า
+            Swal.fire('ออกจากระบบแล้ว', '', 'success').then(() => {
+                window.location.href = 'index.html'; // หรือ login.html
+            });
+        }
+    });
+}
+// เรียกใช้งานตอนโหลดหน้า
+document.addEventListener('DOMContentLoaded', loadMyBookings);
+    </script>
+</body>
+</html>

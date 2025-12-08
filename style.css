@@ -1,0 +1,449 @@
+/* Import Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap');
+
+/* CSS Reset & Base Styles */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+    font-family: 'Kanit', sans-serif; 
+    background-color: #f8f8f8; 
+    color: #333;
+}
+
+/* Navbar */
+header {
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.logo { font-size: 24px; font-weight: 700; color: #cc0000; letter-spacing: -1px; }
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none; /* ลบเส้นใต้ลิงก์ */
+    cursor: pointer;
+}
+
+.logo-icon {
+    height: 40px; /* กำหนดความสูงโลโก้ให้พอดี */
+    width: auto;   /* ให้ความกว้างปรับอัตโนมัติ */
+    transition: transform 0.2s ease;
+}
+
+.logo-icon:hover {
+    transform: scale(1.1); /* ขยายเล็กน้อยเมื่อเอาเมาส์ชี้ */
+}
+
+
+.nav-menu { font-weight: 500; color: #555; }
+
+/* Hero Slider (Flagship Ads) */
+.hero-slider {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+    background: #000;
+}
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    
+    /* ปรับใหม่: ให้รูปขยายเต็มพื้นที่ (Cover) */
+    background-size: cover;       /* ขยายรูปให้เต็มกรอบเสมอ */
+    background-position: center;  /* จัดกึ่งกลาง */
+    background-repeat: no-repeat;
+    
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* เพิ่ม: เงาดำจางๆ ทับรูป เพื่อให้ตัวหนังสือสีขาวอ่านออกชัดเจน */
+.slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; /* เปลี่ยนจาก 50% เป็น 100% ถ้าอยากให้มืดทั้งภาพ หรือไล่เฉด */
+    height: 100%;
+    /* ไล่สีดำจากซ้ายไปขวา (ซ้ายเข้ม ขวาใส) เพื่อให้อ่านข้อความด้านซ้ายได้ */
+    background: linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+    z-index: 1;
+}
+.slide.active { opacity: 1; }
+.slide-content {
+    margin-left: 10%;
+    color: white;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.7);
+    max-width: 500px;
+    z-index: 2;
+}
+.slide-title {
+    font-size: 48px; font-weight: 700; margin-bottom: 10px;
+    text-transform: uppercase; font-style: italic;
+}
+.slide-subtitle { font-size: 20px; font-weight: 300; margin-bottom: 20px; }
+.slide::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 50%; height: 100%;
+    background: linear-gradient(to right, rgba(0,0,0,0.8), transparent);
+    z-index: 1;
+}
+.slider-dots {
+    position: absolute; bottom: 20px; width: 100%;
+    text-align: center; z-index: 10;
+}
+.dot {
+    display: inline-block; width: 12px; height: 12px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 50%; margin: 0 5px; cursor: pointer;
+    transition: background 0.3s;
+}
+.dot.active { background: #cc0000; transform: scale(1.2); }
+
+/* Main Container */
+.container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+h1.page-title {
+    text-align: center; font-size: 32px; font-weight: 700;
+    margin-bottom: 20px; color: #000;
+}
+
+/* Filter Bar Styles */
+/* Shop Layout (แบ่งซ้าย-ขวา) */
+.shop-layout {
+    display: flex;           /* ใช้ Flexbox เพื่อเรียงแนวนอน */
+    align-items: flex-start; /* ให้ชิดขอบบน */
+    gap: 30px;              /* ระยะห่างระหว่าง Sidebar กับ Grid */
+    margin-top: 20px;
+}
+
+/* Sidebar (ด้านซ้าย) */
+.sidebar {
+    width: 250px;           /* ความกว้างคงที่ */
+    flex-shrink: 0;         /* ห้ามหดตัว */
+    position: sticky;       /* (ลูกเล่น) ให้ลอยตามเวลาเลื่อนหน้าจอ */
+    top: 100px;             /* ระยะห่างจากด้านบนเมื่อลอย */
+}
+
+.filter-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.filter-box h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #cc0000; /* ขีดเส้นใต้สีแดง Honda */
+    padding-bottom: 10px;
+    display: inline-block;
+}
+
+.filter-group {
+    margin-bottom: 20px;
+}
+
+.filter-group label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555;
+}
+
+.filter-group select {
+    width: 100%;            /* ขยายเต็มกล่อง Sidebar */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Kanit';
+}
+
+.btn-reset {
+    width: 100%;
+    background: #333;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.btn-reset:hover { background: #000; }
+
+/* Main Content (ด้านขวา) */
+.car-content {
+    flex-grow: 1; /* ขยายเต็มพื้นที่ที่เหลือ */
+}
+
+/* ปรับ Grid ให้ยืดหยุ่นขึ้น */
+.car-grid {
+    display: grid;
+    /* เปลี่ยนจาก fix ขนาด เป็นแบบ auto-fill ตามพื้นที่ */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+    gap: 25px;
+}
+
+/* (Responsive) ปรับเป็นคอลัมน์เดียวเมื่อจอเล็ก (มือถือ) */
+@media (max-width: 768px) {
+    .shop-layout {
+        flex-direction: column; /* เรียงลงมาเป็นแนวตั้ง */
+    }
+    .sidebar {
+        width: 100%;
+        position: static; /* ยกเลิกการลอย */
+    }
+}
+
+/* Car Grid & Cards */
+.car-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+}
+.car-card {
+    background: #fff; border-radius: 4px; overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex; flex-direction: column; justify-content: space-between;
+    border: 1px solid #eee;
+}
+.car-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+
+.car-image-container {
+    padding: 20px; text-align: center; background: #fff;
+    height: 220px; display: flex; align-items: center; justify-content: center;
+}
+.car-image-container img {
+    max-width: 100%; max-height: 100%; object-fit: contain;
+}
+.car-info { padding: 20px; text-align: center; }
+.car-slogan { font-size: 12px; color: #888; letter-spacing: 1px; margin-bottom: 5px; text-transform: uppercase; }
+.car-model { font-size: 24px; font-weight: 700; margin-bottom: 15px; color: #000; }
+.car-price-label { font-size: 14px; color: #666; }
+.car-price { font-size: 20px; font-weight: 500; color: #cc0000; margin-bottom: 15px; }
+
+/* Badges */
+.badges { display: flex; gap: 5px; margin-bottom: 10px; justify-content: center; }
+.badge { font-size: 10px; padding: 3px 8px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
+.badge.turbo { background-color: #333; color: white; }
+.badge.ehev { background-color: #007bff; color: white; }
+.badge.ev { background-color: #28a745; color: white; }
+.badge.body { background-color: #eee; color: #555; border: 1px solid #ddd; }
+
+/* Action Buttons */
+.action-buttons { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid #eee; }
+.btn {
+    padding: 15px; border: none; background: #fff;
+    font-family: 'Kanit', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: background 0.2s;
+}
+.btn-order { background-color: #cc0000; color: white; }
+.btn-order:hover { background-color: #a00000; }
+.btn-detail { background-color: #fff; color: #333; }
+.btn-detail:hover { background-color: #f0f0f0; }
+/* เพิ่มใน style.css */
+.nav-item {
+    font-weight: 500;
+    color: #555;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.nav-item:hover {
+    background-color: #f0f0f0;
+    color: #cc0000;
+}
+/* Modal Styles */
+.modal {
+    display: none; /* ซ่อนไว้ก่อน */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6); /* ฉากหลังดำจางๆ */
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #aaa;
+}
+.close-modal:hover { color: #000; }
+
+.compare-selectors {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.select-group { width: 45%; text-align: left; }
+.select-group label { font-size: 14px; font-weight: 500; display: block; margin-bottom: 5px; }
+.select-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: 'Kanit'; }
+
+/* Responsive มือถือ */
+@media (max-width: 600px) {
+    .compare-selectors { flex-direction: column; }
+    .select-group { width: 100%; }
+}
+.btn-auth {
+            background-color: #cc0000;
+            color: white;
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .btn-auth:hover { background-color: #a30000; }
+        
+        .user-info-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+        .user-name { font-weight: 600; color: #333; }
+        .btn-logout {
+            cursor: pointer;
+            color: #666;
+            background: none;
+            border: none;
+            text-decoration: underline;
+            padding: 0;
+            font-family: 'Kanit', sans-serif;
+        }
+        .btn-logout:hover { color: #cc0000; }
+        .link-profile { text-decoration: none; color: inherit; }
+        
+        .visitor-counter {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-family: 'Kanit', sans-serif;
+    z-index: 1000;
+}
+/* --- ปุ่มเรียกเครื่องคิดเลข --- */
+.btn-calc-toggle {
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+    width: 100%;
+    text-align: left;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.3s;
+}
+
+.btn-calc-toggle:hover {
+    background-color: #f5f5f5;
+    border-color: #bbb;
+}
+
+/* เพิ่มลูกศรเล็กๆ หลังปุ่ม */
+.btn-calc-toggle::after {
+    content: '▼';
+    font-size: 12px;
+}
+
+/* --- กล่องเครื่องคิดเลข --- */
+.calculator-box {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    animation: slideDown 0.3s ease-out; /* เอฟเฟกต์เลื่อนลง */
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.calc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* แบ่ง 2 คอลัมน์ */
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.calc-result {
+    text-align: center;
+    border-top: 1px dashed #ccc;
+    padding-top: 15px;
+}
+
+.monthly-payment-box {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.big-number {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffcc00; /* สีทอง */
+    margin: 0 5px;
+}
+
+@media (max-width: 600px) {
+    .calc-grid { grid-template-columns: 1fr; }
+}

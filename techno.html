@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Honda Technology - นวัตกรรมยานยนต์</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="techno.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo-link">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Honda_Logo.svg" alt="Honda" class="logo-icon">
+        </a>
+        
+        <div style="display:flex; gap:20px; align-items:center;">
+            <a href="techno.html" class="nav-item" style="text-decoration: none; color:#cc0000; font-weight:bold;">
+                <span style="font-size:18px;">⚙️ เทคโนโลยี</span>
+            </a>
+            <a href="contact.html" class="nav-item" style="text-decoration: none;">
+                <span style="font-size:18px;">📞 ติดต่อเรา</span>
+            </a>
+            <div class="nav-item" onclick="openCompareModal()">
+                <span style="font-size:18px;">⚖️ เปรียบเทียบรุ่นรถ</span>
+            </div>
+
+            <div id="auth-section"></div>
+        </div>
+    </header>
+
+    <div class="hero-slider" id="hero-slider"></div>
+
+    <div class="container">
+        <h1 class="page-title" style="margin-top: 40px;">นวัตกรรมขับเคลื่อนอนาคต</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 40px; font-size: 18px;">
+            สัมผัสเทคโนโลยีอัจฉริยะจากฮอนด้า ที่ถูกออกแบบมาเพื่อความปลอดภัย <br>และความสนุกเร้าใจในการขับขี่
+        </p>
+    </div>
+
+    <section class="tech-section">
+        <div class="tech-container">
+            <div class="tech-image">
+                <img src="images/pic1.jpg" alt="Full Hybrid e:HEV">
+            </div>
+            <div class="tech-info">
+                <h2 class="tech-title">Full Hybrid e:HEV</h2>
+                <p class="tech-desc">
+                    ระบบขับเคลื่อนฟูลไฮบริด e:HEV มอบสมรรถนะการขับขี่ที่ทรงพลังและประหยัดน้ำมันดีเยี่ยม 
+                    ด้วยการทำงานร่วมกันของมอเตอร์ไฟฟ้า 2 ตัว และเครื่องยนต์ประสิทธิภาพสูง
+                </p>
+                <ul class="tech-list">
+                    <li>ออกตัวด้วยพลังมอเตอร์ไฟฟ้า (EV Drive Mode)</li>
+                    <li>เร่งแซงทันใจด้วย Hybrid Drive Mode</li>
+                    <li>ประหยัดน้ำมันสูงสุดถึง 25 กม./ลิตร</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="tech-section">
+        <div class="tech-container">
+            <div class="tech-image">
+                <img src="images/pic2.jpg" alt="VTEC TURBO">
+            </div>
+            <div class="tech-info">
+                <h2 class="tech-title">VTEC TURBO</h2>
+                <p class="tech-desc">
+                    ความแรงที่มาพร้อมความประหยัด เครื่องยนต์ VTEC TURBO ให้พละกำลังเทียบเท่าเครื่องยนต์ขนาดใหญ่ 
+                    แต่ประหยัดน้ำมันเหมือนเครื่องยนต์ขนาดเล็ก ขับสนุก เร้าใจ ในทุกเส้นทาง
+                </p>
+                <ul class="tech-list">
+                    <li>ให้กำลังสูงสุด 178 แรงม้า (ใน Civic)</li>
+                    <li>ตอบสนองฉับไว ด้วยเทอร์โบชาร์จเจอร์</li>
+                    <li>ขับสนุกสไตล์สปอร์ต เอกลักษณ์ของฮอนด้า</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="tech-section">
+        <div class="tech-container">
+            <div class="tech-image">
+                <img src="images/pic3.jpg" alt="Honda SENSING">
+            </div>
+            <div class="tech-info">
+                <h2 class="tech-title">Honda SENSING</h2>
+                <p class="tech-desc">
+                    เทคโนโลยีความปลอดภัยอัจฉริยะ ทำหน้าที่ตรวจจับและแจ้งเตือน เพื่อลดความเสี่ยงในการเกิดอุบัติเหตุ 
+                    ให้คุณมั่นใจในทุกการเดินทาง
+                </p>
+                <ul class="tech-list">
+                    <li>ระบบเตือนการชนพร้อมระบบช่วยเบรก (CMBS)</li>
+                    <li>ระบบช่วยควบคุมรถให้อยู่ในช่องทางเดินรถ (LKAS)</li>
+                    <li>ระบบควบคุมความเร็วอัตโนมัติแบบแปรผัน (ACC with LSF)</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <div id="compare-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeCompareModal()">&times;</span>
+            <h2>เปรียบเทียบสเปกรถยนต์</h2>
+            <p>เลือกรุ่นรถที่ต้องการเปรียบเทียบ</p>
+            
+            <div class="compare-selectors">
+                <div class="select-group">
+                    <label>รถรุ่นที่ 1</label>
+                    <select id="select-car-1">
+                        <option value="">-- เลือกรุ่นรถ --</option>
+                    </select>
+                </div>
+
+                <div style="font-weight:bold; font-size:24px; color:#cc0000;">VS</div>
+
+                <div class="select-group">
+                    <label>รถรุ่นที่ 2</label>
+                    <select id="select-car-2">
+                        <option value="">-- เลือกรุ่นรถ --</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-order" style="width:100%; margin-top:20px; font-size:18px;" onclick="confirmCompare()">เริ่มเปรียบเทียบ</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Auth Logic ---
+        function checkAuth() {
+            const userStr = localStorage.getItem('user');
+            const authSection = document.getElementById('auth-section');
+
+            if (userStr) {
+                // ถ้า Login แล้ว
+                const user = JSON.parse(userStr);
+                authSection.innerHTML = `
+                    <div class="user-info-area">
+                        <a href="profile.html" class="link-profile">
+                            <span class="user-name">👤 ${user.fullname}</span>
+                        </a>
+                        <span style="color:#ddd;">|</span>
+                        <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
+                    </div>
+                `;
+            } else {
+                // ถ้ายังไม่ Login
+                authSection.innerHTML = `
+                    <a href="login.html" class="btn-auth">เข้าสู่ระบบ / สมัครสมาชิก</a>
+                `;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.reload(); // รีเฟรชหน้าเพื่อเคลียร์สถานะ
+        }
+
+        // --- 2. Fetch Banners ---
+        let currentSlide = 0;
+        let slideInterval;
+
+        async function fetchBanners() {
+            try {
+                const response = await fetch('/api/banners');
+                const banners = await response.json();
+                const sliderContainer = document.getElementById('hero-slider');
+                
+                if (banners.length === 0) return;
+                sliderContainer.innerHTML = ''; 
+
+                banners.forEach((banner, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = `slide ${index === 0 ? 'active' : ''}`;
+                    slide.style.backgroundImage = `url('${banner.image_url}')`;
+                    slide.innerHTML = `
+                        <div class="slide-content">
+                            <h2 class="slide-title">${banner.title}</h2>
+                            <p class="slide-subtitle">${banner.subtitle}</p>
+                        </div>
+                    `;
+                    sliderContainer.appendChild(slide);
+                });
+
+                startSlideShow();
+            } catch (error) {
+                console.error('Error fetching banners:', error);
+            }
+        }
+
+        function startSlideShow() {
+            if (slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(() => {
+                const slides = document.querySelectorAll('.slide');
+                if (slides.length === 0) return;
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }, 4000);
+        }
+        
+        function logout() {
+            Swal.fire({
+                title: 'ออกจากระบบ?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'ใช่',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+            // ✅ หัวใจสำคัญ: ลบ Token ทิ้ง
+            localStorage.removeItem('token');
+            localStorage.removeItem('user'); 
+            
+            // แจ้งเตือนและรีเฟรชหน้า
+            Swal.fire('ออกจากระบบแล้ว', '', 'success').then(() => {
+                window.location.href = 'index.html'; // หรือ login.html
+            });
+        }
+    });
+}
+
+
+        // --- 4. Initialize ---
+        checkAuth();
+        fetchBanners();
+        fetchCars(); // เรียกโหลดข้อมูลรถด้วย ไม่งั้น dropdown จะว่างเปล่า
+    </script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+/* =========================================
+   techno.css - สไตล์สำหรับหน้าเทคโนโลยี
+   ========================================= */
+
+/* --- Layout หลักของแต่ละ Section --- */
+.tech-section {
+    padding: 80px 0;
+    border-bottom: 1px solid #eee;
+    background-color: #fff;
+}
+
+/* สลับสีพื้นหลังให้ดูมีมิติ (แถวคู่จะเป็นสีเทาจางๆ) */
+.tech-section:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.tech-section:last-child {
+    border-bottom: none;
+}
+
+.tech-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    padding: 0 20px;
+}
+
+/* --- สลับตำแหน่งรูปกับข้อความ (ซ้าย-ขวา) --- */
+/* ถ้าเป็นแถวคู่ (2, 4, ...) ให้รูปไปอยู่ขวา */
+.tech-section:nth-child(even) .tech-container {
+    flex-direction: row-reverse;
+}
+
+/* --- ส่วนของรูปภาพ --- */
+.tech-image {
+    flex: 1;
+    border-radius: 12px;
+    overflow: hidden; /* ตัดส่วนเกินของรูปให้โค้งตามกรอบ */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1); /* เงานุ่มๆ */
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    background: #fff; /* รองพื้นสีขาวเผื่อรูปโหลดไม่ทัน */
+}
+
+/* เอฟเฟกต์ตอนเอาเมาส์ชี้รูป */
+.tech-image:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.tech-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+/* --- ส่วนของเนื้อหาข้อความ --- */
+.tech-info {
+    flex: 1;
+}
+
+.tech-title {
+    font-family: 'Kanit', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #cc0000; /* สีแดง Honda */
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    position: relative;
+    display: inline-block;
+}
+
+/* ขีดเส้นใต้สีดำเล็กๆ ใต้หัวข้อ */
+.tech-title::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 4px;
+    background: #333;
+    margin-top: 8px;
+    border-radius: 2px;
+}
+
+.tech-desc {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 25px;
+    font-weight: 300;
+}
+
+/* --- รายการจุดเด่น (List) --- */
+.tech-list {
+    list-style: none; /* เอาจุดดำเดิมออก */
+    padding: 0;
+}
+
+.tech-list li {
+    margin-bottom: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    display: flex;
+    align-items: center;
+}
+
+/* สร้างไอคอนติ๊กถูก (✔) สีแดงหน้าข้อความ */
+.tech-list li::before {
+    content: '✔';
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+    background-color: #cc0000;
+    color: #fff;
+    border-radius: 50%;
+    margin-right: 15px;
+    font-size: 12px;
+    flex-shrink: 0; /* ไม่ให้วงกลมบี้เวลามีข้อความยาวๆ */
+}
+
+/* --- Responsive (สำหรับมือถือ) --- */
+@media (max-width: 900px) {
+    .tech-section {
+        padding: 50px 0;
+    }
+
+    .tech-container {
+        flex-direction: column !important; /* เรียงลงแนวตั้งเสมอ */
+        gap: 30px;
+        text-align: center;
+    }
+
+    /* จัดขีดเส้นใต้ให้อยู่กลางจอ */
+    .tech-title::after {
+        margin: 8px auto 0 auto;
+    }
+
+    /* ให้ List ชิดซ้ายเหมือนเดิมเพื่อให้อ่านง่าย */
+    .tech-list {
+        display: inline-block;
+        text-align: left;
+    }
+}
