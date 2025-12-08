@@ -11,7 +11,7 @@ const nodemailer = require('nodemailer');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT= process.env.PORT || 3000;
 app.set('trust proxy', true);
 
 // กำหนด Secret Key ให้เหมือนกันทั้งระบบ (สำคัญมาก!)
@@ -312,6 +312,7 @@ app.get('/api/visit-count', (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
+
 
 
 
