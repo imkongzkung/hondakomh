@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ติดต่อเรา | Honda Showroom</title>
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="contact.css"> 
+    
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo-link">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Honda_Logo.svg" alt="Honda" class="logo-icon">
+        </a>
+        
+        <div style="display:flex; gap:20px; align-items:center;">
+            <a href="techno.html" class="nav-item" style="text-decoration: none;">
+                <span style="font-size:18px;">⚙️ เทคโนโลยี</span>
+            </a>
+            <a href="contact.html" class="nav-item" style="text-decoration: none; color:#cc0000; font-weight:bold;">
+                <span style="font-size:18px;">📞 ติดต่อเรา</span>
+            </a>
+            <div class="nav-item" onclick="openCompareModal()">
+                <span style="font-size:18px;">⚖️ เปรียบเทียบรุ่นรถ</span>
+            </div>
+
+            <div id="auth-section"></div>
+        </div>
+    </header>
+
+    <div class="contact-banner">
+        <h1>ติดต่อเรา & ค้นหาโชว์รูม</h1>
+        <p>พร้อมให้บริการคุณด้วยใจ ค้นหาสาขาใกล้บ้านคุณ</p>
+    </div>
+
+    <div class="container contact-layout">
+        
+        <div class="contact-form-area">
+            <h2>ส่งข้อความถึงเรา</h2>
+            <p style="margin-bottom: 20px; color: #666;">กรอกข้อมูลเพื่อให้เจ้าหน้าที่ติดต่อกลับ</p>
+            
+            <form onsubmit="submitContact(event)">
+                <div class="form-group">
+                    <label>ชื่อ-นามสกุล</label>
+                    <input type="text" id="contact-name" required placeholder="ระบุชื่อของคุณ">
+                </div>
+                <div class="form-group">
+                    <label>เบอร์โทรศัพท์</label>
+                    <input type="tel" id="contact-phone" required placeholder="ระบุเบอร์โทรศัพท์">
+                </div>
+                <div class="form-group">
+                    <label>หัวข้อติดต่อ</label>
+                    <select id="contact-topic">
+                        <option>สอบถามข้อมูลรถยนต์</option>
+                        <option>นัดหมายทดลองขับ</option>
+                        <option>แจ้งปัญหาการใช้งาน</option>
+                        <option>อื่นๆ</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>ข้อความ</label>
+                    <textarea id="contact-msg" rows="5" placeholder="รายละเอียดที่ต้องการสอบถาม"></textarea>
+                </div>
+                <button type="submit" class="btn-submit">ส่งข้อความ</button>
+            </form>
+        </div>
+
+        <div class="branch-list-area">
+            <h2>📍 ค้นหาโชว์รูมและศูนย์บริการ</h2>
+            <div id="branch-list-container">
+                <p>กำลังโหลดข้อมูลสาขา...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. Auth Logic ---
+        function checkAuth() {
+            const userStr = localStorage.getItem('user');
+            const authSection = document.getElementById('auth-section');
+
+            if (userStr) {
+                // ถ้า Login แล้ว
+                const user = JSON.parse(userStr);
+                authSection.innerHTML = `
+                    <div class="user-info-area">
+                        <a href="profile.html" class="link-profile">
+                            <span class="user-name">👤 ${user.fullname}</span>
+                        </a>
+                        <span style="color:#ddd;">|</span>
+                        <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
+                    </div>
+                `;
+            } else {
+                // ถ้ายังไม่ Login
+                authSection.innerHTML = `
+                    <a href="login.html" class="btn-auth">เข้าสู่ระบบ / สมัครสมาชิก</a>
+                `;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.reload(); // รีเฟรชหน้าเพื่อเคลียร์สถานะ
+        }
+
+        // --- 3. Fetch Branches Logic ---
+        async function fetchBranches() {
+            try {
+                const res = await fetch('/api/branches');
+                const branches = await res.json();
+                
+                const container = document.getElementById('branch-list-container');
+                container.innerHTML = '';
+
+                branches.forEach(branch => {
+                    const mapLink = `https://www.google.com/maps/search/?api=1&query=${branch.lat},${branch.lng}`;
+
+                    container.innerHTML += `
+                        <div class="branch-card">
+                            <h3>🏢 ${branch.name}</h3>
+                            <p class="branch-address">${branch.address}</p>
+                            <a href="${mapLink}" target="_blank" class="btn-map">
+                                🧭 นำทาง (Google Maps)
+                            </a>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error(err);
+                document.getElementById('branch-list-container').innerHTML = '<p style="color:red">โหลดข้อมูลสาขาไม่สำเร็จ</p>';
+            }
+        }
+
+        // --- 4. Submit Contact Logic ---
+        async function submitContact(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('contact-name').value;
+            const phone = document.getElementById('contact-phone').value;
+            const topic = document.getElementById('contact-topic').value;
+            const msg = document.getElementById('contact-msg').value;
+
+            if(!name || !phone) {
+                Swal.fire('แจ้งเตือน', 'กรุณากรอกชื่อและเบอร์โทรศัพท์', 'warning');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        name: name, 
+                        phone: phone, 
+                        topic: topic, 
+                        message: msg 
+                    })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'ส่งข้อความสำเร็จ',
+                        text: 'ข้อมูลถูกบันทึกเรียบร้อยแล้ว เจ้าหน้าที่จะติดต่อกลับครับ',
+                        confirmButtonColor: '#cc0000'
+                    });
+                    e.target.reset();
+                } else {
+                    Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถส่งข้อมูลได้ในขณะนี้', 'error');
+                }
+
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Error', 'ไม่สามารถเชื่อมต่อ Server ได้', 'error');
+            }
+        }
+
+        function logout() {
+            Swal.fire({
+                title: 'ออกจากระบบ?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'ใช่',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+            // ✅ หัวใจสำคัญ: ลบ Token ทิ้ง
+            localStorage.removeItem('token');
+            localStorage.removeItem('user'); 
+            
+            // แจ้งเตือนและรีเฟรชหน้า
+            Swal.fire('ออกจากระบบแล้ว', '', 'success').then(() => {
+                window.location.href = 'index.html'; // หรือ login.html
+            });
+        }
+    })
+}
+    
+        // เรียกใช้งานฟังก์ชันเมื่อเปิดหน้าเว็บ
+        checkAuth();
+        fetchBranches();
+    </script>
+</body>
+</html>

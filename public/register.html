@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สมัครสมาชิก | Honda</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .auth-container { max-width: 400px; margin: 50px auto; padding: 30px; background: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 8px; font-family: 'Kanit'; }
+        h2 { text-align: center; color: #cc0000; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #cc0000; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px;}
+        .link { text-align: center; margin-top: 15px; display: block; color: #666; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo-link"><img src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Honda_Logo.svg" alt="Honda" class="logo-icon"></a>
+    </header>
+
+    <div class="auth-container">
+        <h2>สมัครสมาชิกใหม่</h2>
+        <input type="text" id="reg-fullname" placeholder="ชื่อ-นามสกุล">
+        <input type="tel" id="reg-phone" placeholder="เบอร์โทรศัพท์">
+        <input type="text" id="reg-username" placeholder="ตั้งชื่อผู้ใช้งาน (Username)">
+        <input type="password" id="reg-password" placeholder="ตั้งรหัสผ่าน">
+        <button onclick="register()">สมัครสมาชิก</button>
+        <a href="login.html" class="link">มีบัญชีอยู่แล้ว?  เข้าสู่ระบบ</a>
+    </div>
+
+    <script>
+       // ... (วางทับใน <script> ของ register.html) ...
+
+    async function register() {
+    const usernameVal = document.getElementById('reg-username').value;
+    const passwordVal = document.getElementById('reg-password').value;
+    const fullnameVal = document.getElementById('reg-fullname').value;
+    const phoneVal = document.getElementById('reg-phone').value;
+
+    if(!usernameVal || !passwordVal || !fullnameVal || !phoneVal) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'ข้อมูลไม่ครบ',
+            text: 'กรุณากรอกข้อมูลให้ครบทุกช่อง'
+        });
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: usernameVal, password: passwordVal, fullname: fullnameVal, phone: phoneVal })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+            // ✅ Popup สีเขียว (Success)
+            Swal.fire({
+                icon: 'success',
+                title: 'สมัครสมาชิกสำเร็จ!',
+                text: 'กรุณาเข้าสู่ระบบเพื่อใช้งานต่อ',
+                confirmButtonText: 'ไปหน้าเข้าสู่ระบบ'
+            }).then((result) => {
+                // เมื่อกดปุ่ม OK ให้เด้งไปหน้า Login
+                if (result.isConfirmed) {
+                    window.location.href = 'login.html';
+                }
+            });
+        } else {
+            // ❌ Popup สีแดง (Error)
+            Swal.fire({
+                icon: 'error',
+                title: 'สมัครไม่ผ่าน',
+                text: data.message || 'เกิดข้อผิดพลาด'
+            });
+        }
+    } catch (err) {
+        Swal.fire('แย่แล้ว', 'เชื่อมต่อระบบไม่ได้: ' + err.message, 'error');
+    }
+}
+
+    </script>
+</body>
+</html>

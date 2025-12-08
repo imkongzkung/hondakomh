@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Honda Showroom</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        /* CSS สำหรับข่าว (ปรับปรุงให้เข้ากับตำแหน่งใหม่) */
+        .news-section {
+            max-width: 1200px; /* จำกัดความกว้างให้เท่ากับคอนเทนต์หลัก */
+            margin: 40px auto; /* จัดกึ่งกลางและเว้นระยะห่าง */
+            padding: 0 20px;
+        }
+
+        .news-header {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            border-left: 5px solid #cc0000; /* เส้นแดงข้างหน้าให้ดูสวย */
+            padding-left: 15px;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        /* Class นี้ตรงกับใน JavaScript ของคุณ */
+        .thump-news-picture {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .thump-news-picture:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .thump-news-picture img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .title-news {
+            padding: 20px;
+        }
+
+        .title-news h3 {
+            font-size: 18px;
+            margin: 0 0 10px;
+            line-height: 1.4;
+            color: #333;
+            height: 50px; /* จำกัดความสูงหัวข้อ */
+            overflow: hidden;
+        }
+
+        .title-news a {
+            text-decoration: none;
+            color: #cc0000;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .title-news a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo-link">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Honda_Logo.svg" alt="Honda" class="logo-icon">
+        </a>
+        
+        <div style="display:flex; gap:20px; align-items:center;">
+            <a href="techno.html" class="nav-item" style="text-decoration: none;">
+                <span style="font-size:18px;">⚙️ เทคโนโลยี</span>
+            </a>
+            <a href="contact.html" class="nav-item" style="text-decoration: none;">
+                <span style="font-size:18px;">📞 ติดต่อเรา</span>
+            </a>
+            <div class="nav-item" onclick="openCompareModal()">
+                <span style="font-size:18px;">⚖️ เปรียบเทียบรุ่นรถ</span>
+            </div>
+
+            <div id="auth-section">
+            </div>
+        </div>
+    </header>
+
+    <div class="hero-slider" id="hero-slider"></div>
+
+    <section class="news-section">
+        <h2 class="news-header">ข่าวสารและโปรโมชั่นล่าสุด</h2>
+        <div id="news-container" class="news-grid">
+            <p style="color:#888;">กำลังโหลดข่าวสาร...</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <h1 class="page-title">เลือกรุ่นรถฮอนด้า</h1>
+
+        <div class="shop-layout">
+            
+            <aside class="sidebar">
+                <div class="filter-box">
+                    <h3>ค้นหารถที่ใช่</h3>
+                    
+                    <div class="filter-group">
+                        <label>ประเภทตัวถัง</label>
+                        <select id="filter-body" onchange="applyFilters()">
+                            <option value="all" selected>ทั้งหมด (All)</option>
+                            <option value="Sedan">Sedan</option>
+                            <option value="Hatchback">Hatchback</option>
+                            <option value="SUV">SUV</option>
+                            <option value="MUV">MUV</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>ระบบขับเคลื่อน</label>
+                        <select id="filter-engine" onchange="applyFilters()">
+                            <option value="all" selected>ทั้งหมด (All)</option>
+                            <option value="Turbo">VTEC Turbo</option>
+                            <option value="e:HEV">Full Hybrid e:HEV</option>
+                            <option value="EV">Electric (EV 100%)</option>
+                        </select>
+                    </div>
+
+                    <button class="btn-reset" onclick="resetFilters()">ล้างค่าค้นหา</button>
+                </div>
+            </aside>
+
+            <main class="car-content">
+                <div class="car-grid" id="car-list">
+                </div>
+            </main>
+        
+        </div>
+    </div>
+
+    <div id="compare-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeCompareModal()">&times;</span>
+            <h2>เปรียบเทียบสเปกรถยนต์</h2>
+            <p>เลือกรุ่นรถที่ต้องการเปรียบเทียบ</p>
+            
+            <div class="compare-selectors">
+                <div class="select-group">
+                    <label>รถรุ่นที่ 1</label>
+                    <select id="select-car-1">
+                        <option value="">-- เลือกรุ่นรถ --</option>
+                    </select>
+                </div>
+
+                <div style="font-weight:bold; font-size:24px; color:#cc0000;">VS</div>
+
+                <div class="select-group">
+                    <label>รถรุ่นที่ 2</label>
+                    <select id="select-car-2">
+                        <option value="">-- เลือกรุ่นรถ --</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-order" style="width:100%; margin-top:20px; font-size:18px;" onclick="confirmCompare()">เริ่มเปรียบเทียบ</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Global Variables ---
+        let allCarsData = [];
+        let currentSlide = 0;
+        let slideInterval;
+
+        // --- 2. Auth Logic ---
+        function checkAuth() {
+            const userStr = localStorage.getItem('user');
+            const authSection = document.getElementById('auth-section');
+
+            if (userStr) {
+                // ถ้า Login แล้ว
+                const user = JSON.parse(userStr);
+                authSection.innerHTML = `
+                    <div class="user-info-area">
+                        <a href="profile.html" class="link-profile">
+                            <span class="user-name">👤 ${user.fullname}</span>
+                        </a>
+                        <span style="color:#ddd;">|</span>
+                        <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
+                    </div>
+                `;
+            } else {
+                // ถ้ายังไม่ Login
+                authSection.innerHTML = `
+                    <a href="login.html" class="btn-auth">เข้าสู่ระบบ / สมัครสมาชิก</a>
+                `;
+            }
+        }
+
+        function logout() {
+            Swal.fire({
+                title: 'ออกจากระบบ?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'ใช่',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // ✅ ลบ Token ทิ้ง
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user'); 
+                    
+                    Swal.fire({
+                        title: 'ออกจากระบบแล้ว',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = 'index.html'; 
+                    });
+                }
+            });
+        }
+
+        // --- 3. Data Fetching ---
+
+        async function fetchCars() {
+            try {
+                const response = await fetch('/api/cars');
+                allCarsData = await response.json();
+                
+                displayCars(allCarsData); 
+                populateCompareDropdowns(allCarsData);
+
+                document.getElementById('filter-body').value = 'all';
+                document.getElementById('filter-engine').value = 'all';
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('car-list').innerHTML = '<p style="text-align:center;">เกิดข้อผิดพลาดในการโหลดข้อมูล</p>';
+            }
+        }
+
+        async function fetchBanners() {
+            try {
+                const response = await fetch('/api/banners');
+                const banners = await response.json();
+                const sliderContainer = document.getElementById('hero-slider');
+                
+                if (banners.length === 0) return;
+
+                sliderContainer.innerHTML = ''; 
+
+                banners.forEach((banner, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = `slide ${index === 0 ? 'active' : ''}`;
+                    slide.style.backgroundImage = `url('${banner.image_url}')`;
+                    slide.innerHTML = `
+                        <div class="slide-content">
+                            <h2 class="slide-title">${banner.title}</h2>
+                            <p class="slide-subtitle">${banner.subtitle}</p>
+                            <button class="btn btn-order" style="padding: 10px 30px; font-size: 16px; margin-top:15px;">ดูข้อเสนอพิเศษ</button>
+                        </div>
+                    `;
+                    sliderContainer.appendChild(slide);
+                });
+
+                startSlideShow();
+
+            } catch (error) {
+                console.error('Banner error:', error);
+            }
+        }
+
+        // --- 4. News Logic (Load Honda News) ---
+        async function loadNews() {
+            try {
+                const res = await fetch('/api/honda-news');
+                const news = await res.json();
+                
+                const container = document.getElementById('news-container');
+                container.innerHTML = ''; 
+
+                if (news.length === 0) {
+                    container.innerHTML = '<p>ไม่พบข่าวสารในขณะนี้</p>';
+                    return;
+                }
+
+                news.forEach(item => {
+                    const html = `
+                        <div class="thump-news-picture" onclick="window.open('${item.link}', '_blank')">
+                            <img src="${item.image}" alt="${item.title}">
+                            <div class="title-news">
+                                <h3>${item.title}</h3>
+                                <a href="${item.link}" target="_blank">อ่านเพิ่มเติม &rarr;</a>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += html;
+                });
+            } catch (err) {
+                console.error(err);
+                document.getElementById('news-container').innerHTML = '<p>ไม่สามารถโหลดข่าวได้</p>';
+            }
+        }
+
+        // --- 5. UI Display Functions ---
+
+        function displayCars(cars) {
+            const container = document.getElementById('car-list');
+            container.innerHTML = '';
+            
+            if(cars.length === 0) { 
+                container.innerHTML = '<p style="text-align:center; width:100%; color:#b0b0b0; font-size:20px; margin-top:50px;">ไม่พบรถในหมวดหมู่นี้</p>'; 
+                return; 
+            }
+
+            cars.forEach(car => {
+                let colorHtml = '<div class="color-options" style="height:25px;"></div>';
+                if (car.colors && car.colors.length > 0) {
+                    colorHtml = `<div class="color-options">`;
+                    car.colors.forEach((c, i) => {
+                        colorHtml += `<div class="color-dot ${i===0?'active':''}" style="background:${c.color_hex}" onclick="changeCarColor(this, 'img-${car.id}', '${c.image_url}')"></div>`;
+                    });
+                    colorHtml += `</div>`;
+                }
+
+                let engineClass = car.engine_system === 'e:HEV' ? 'ehev' : (car.engine_system === 'EV' ? 'ev' : 'turbo');
+
+                container.innerHTML += `
+                    <div class="car-card">
+                        <div class="car-image-container">
+                            <img id="img-${car.id}" src="${car.image_url}" alt="${car.model_name}">
+                        </div>
+                        <div class="car-info">
+                            <div class="badges">
+                                <span class="badge body">${car.body_type}</span>
+                                <span class="badge ${engineClass}">${car.engine_system}</span>
+                            </div>
+                            
+                            <h2 class="car-model">${car.model_name}</h2>
+                            
+                            ${colorHtml}
+                            
+                            <div class="car-price">${new Intl.NumberFormat('th-TH').format(car.price)} บาท</div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <a href="detail.html?id=${car.id}" class="btn btn-detail">รายละเอียด</a>
+                            <button class="btn btn-order" onclick="goToDetail('${car.id}')">จองออนไลน์</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function changeCarColor(dot, imgId, url) {
+            const img = document.getElementById(imgId);
+            img.style.opacity = 0.5;
+            setTimeout(() => { img.src = url; img.style.opacity = 1; }, 200);
+            dot.parentElement.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+            dot.classList.add('active');
+        }
+
+        function goToDetail(id) {
+            window.location.href = `detail.html?id=${id}`;
+        }
+
+        // --- 6. Filtering Logic ---
+
+        function applyFilters() {
+            const bodyVal = document.getElementById('filter-body').value;
+            const engineVal = document.getElementById('filter-engine').value;
+
+            const filtered = allCarsData.filter(car => {
+                const matchBody = (bodyVal === 'all') || (car.body_type === bodyVal);
+                const matchEngine = (engineVal === 'all') || (car.engine_system === engineVal);
+                return matchBody && matchEngine;
+            });
+
+            displayCars(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById('filter-body').value = 'all';
+            document.getElementById('filter-engine').value = 'all';
+            displayCars(allCarsData);
+        }
+
+        // --- 7. Comparison Modal Logic ---
+
+        function populateCompareDropdowns(cars) {
+            const select1 = document.getElementById('select-car-1');
+            const select2 = document.getElementById('select-car-2');
+            
+            select1.innerHTML = '<option value="">-- เลือกรุ่นรถ --</option>';
+            select2.innerHTML = '<option value="">-- เลือกรุ่นรถ --</option>';
+
+            cars.forEach(car => {
+                const option = `<option value="${car.id}">${car.model_name}</option>`;
+                select1.innerHTML += option;
+                select2.innerHTML += option;
+            });
+        }
+
+        function openCompareModal() {
+            document.getElementById('compare-modal').style.display = 'flex';
+        }
+
+        function closeCompareModal() {
+            document.getElementById('compare-modal').style.display = 'none';
+        }
+
+        function confirmCompare() {
+            const id1 = document.getElementById('select-car-1').value;
+            const id2 = document.getElementById('select-car-2').value;
+
+            if (!id1 || !id2) {
+                Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเลือกรถให้ครบทั้ง 2 รุ่นครับ', 'warning');
+                return;
+            }
+            if (id1 === id2) {
+                Swal.fire('เลือกรุ่นซ้ำ', 'กรุณาเลือกรุ่นที่แตกต่างกันครับ', 'warning');
+                return;
+            }
+            window.location.href = `compare.html?ids=${id1},${id2}`;
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('compare-modal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // --- 8. Slider Logic ---
+
+        function startSlideShow() {
+            if (slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(() => {
+                const slides = document.querySelectorAll('.slide');
+                if (slides.length === 0) return;
+
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }, 4000);
+        }
+
+        async function updateVisitorCount() {
+    try {
+        const res = await fetch('/api/visit-count');
+        const data = await res.json();
+        
+        // แสดงตัวเลขแบบมีลูกน้ำ (เช่น 1,234)
+        document.getElementById('visit-count').innerText = data.total_visits.toLocaleString();
+        
+        // (ตัวเลือกเสริม) แอบดูใน Console ว่าเรา IP อะไร
+        console.log('Your IP:', data.your_ip);
+        
+    } catch (err) {
+        console.error('ไม่สามารถดึงยอดวิวได้', err);
+    }
+}
+
+// เรียกทำงานเมื่อโหลดหน้าเว็บ
+document.addEventListener('DOMContentLoaded', updateVisitorCount);
+
+        // --- 9. Initialize ---
+        checkAuth(); 
+        fetchBanners();
+        loadNews(); // เรียกโหลดข่าวด้วย
+        fetchCars();
+
+    </script>
+    <div class="visitor-counter">
+    <span>👀 ผู้เข้าชมไม่ซ้ำหน้า: <strong id="visit-count">...</strong> คน</span>
+</div>
+</body>
+</html>

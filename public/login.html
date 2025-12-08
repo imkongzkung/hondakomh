@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ | Honda</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .auth-container { max-width: 400px; margin: 50px auto; padding: 30px; background: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 8px; font-family: 'Kanit'; }
+        h2 { text-align: center; color: #cc0000; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #cc0000; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px;}
+        .link { text-align: center; margin-top: 15px; display: block; color: #666; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo-link"><img src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Honda_Logo.svg" alt="Honda" class="logo-icon"></a>
+    </header>
+
+    <div class="auth-container">
+        <h2>เข้าสู่ระบบ</h2>
+        <input type="text" id="username" placeholder="ชื่อผู้ใช้งาน (Username)">
+        <input type="password" id="password" placeholder="รหัสผ่าน">
+        <button onclick="login()">Login</button>
+        <a href="register.html" class="link">ยังไม่มีบัญชี? สมัครสมาชิก</a>
+    </div>
+
+    <script>
+        // ... (วางทับใน <script> ของ login.html) ...
+
+    // ในไฟล์ login.html (ส่วน Script)
+    // 
+    
+    async function login() {
+    const usernameVal = document.getElementById('username').value;
+    const passwordVal = document.getElementById('password').value;
+
+    if(!usernameVal || !passwordVal) {
+        Swal.fire('แจ้งเตือน', 'กรุณากรอก Username และ Password', 'warning');
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: usernameVal, password: passwordVal })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+            localStorage.setItem('token', data.token);
+            if(data.user) localStorage.setItem('user', JSON.stringify(data.user));
+
+            // ✅ Login สำเร็จ (ตั้งเวลาปิดเอง 1.5 วิ)
+            Swal.fire({
+                icon: 'success',
+                title: 'ยินดีต้อนรับ!',
+                text: 'เข้าสู่ระบบสำเร็จ กำลังพาไปหน้าหลัก...',
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.href = 'index.html';
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'เข้าสู่ระบบไม่สำเร็จ',
+                text: data.message || 'ชื่อผู้ใช้หรือรหัสผ่านผิด'
+            });
+        }
+    } catch (err) {
+        Swal.fire('Error', err.message, 'error');
+    }
+}
+    </script>
+</body>
+</html>

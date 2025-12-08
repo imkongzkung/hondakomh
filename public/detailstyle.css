@@ -1,0 +1,182 @@
+/* =========================================
+   CSS สำหรับหน้า Detail (detail.html)
+   ========================================= */
+
+.detail-wrapper {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.detail-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr; /* รูป 60% : ข้อมูล 40% */
+    min-height: 600px;
+}
+
+/* ส่วนแสดงรูปภาพ (ซ้าย) */
+.product-image-section {
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    position: relative;
+    border-right: 1px solid #f0f0f0;
+}
+
+.product-image-section img {
+    width: 100%;
+    max-width: 650px;
+    height: auto;
+    object-fit: contain;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.product-image-section img:hover {
+    transform: scale(1.02);
+}
+
+/* ส่วนแสดงข้อมูล (ขวา) */
+.product-info-section {
+    padding: 50px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* ป้าย Tags */
+.tags {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tag {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tag.body { background: #eee; color: #555; }
+.tag.engine { background: #333; color: #fff; }
+.tag.engine.ehev { background: #007bff; }
+.tag.engine.ev { background: #28a745; }
+
+/* หัวข้อและราคา */
+.product-title {
+    font-size: 42px;
+    font-weight: 700;
+    color: #000;
+    margin: 0;
+    line-height: 1.1;
+}
+
+.product-slogan {
+    font-size: 18px;
+    color: #777;
+    margin-top: 10px;
+    font-weight: 300;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.price-tag {
+    font-size: 36px;
+    color: #cc0000;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+/* ตารางสเปกย่อ */
+.specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 30px;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.spec-item small { display: block; color: #888; font-size: 12px; }
+.spec-item strong { font-size: 16px; color: #333; }
+
+/* ตัวเลือกสี */
+.color-selector { margin-bottom: 40px; }
+.color-label { font-size: 14px; color: #555; margin-bottom: 12px; font-weight: 500; }
+.color-options { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.big-dot {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.big-dot:hover { transform: scale(1.1); border-color: #999; }
+.big-dot.active {
+    transform: scale(1.15);
+    border-color: #cc0000;
+    box-shadow: 0 0 0 2px rgba(204, 0, 0, 0.2);
+}
+
+/* ปุ่มกด */
+.btn-main {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    background-color: #cc0000;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-family: 'Kanit';
+}
+
+.btn-main:hover { background-color: #a00000; box-shadow: 0 5px 15px rgba(204, 0, 0, 0.3); }
+
+/* Responsive หน้า Detail */
+@media (max-width: 900px) {
+    .detail-card { grid-template-columns: 1fr; }
+    .product-image-section { padding: 30px; height: 300px; }
+    .product-image-section img { max-height: 100%; }
+    .product-title { font-size: 32px; }
+}
+.modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); display: none;
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-box {
+            background: #fff; padding: 25px; border-radius: 8px;
+            width: 450px; 
+            max-width: 90%;
+            max-height: 90vh; 
+            overflow-y: auto; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            font-family: 'Kanit', sans-serif;
+        }
+        .modal-box h3 { margin-top: 0; color: #cc0000; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 10px; border: 1px solid #ddd;
+            border-radius: 4px; box-sizing: border-box; font-family: 'Kanit', sans-serif;
+        }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .btn-cancel { background: #ccc; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+        .btn-confirm { background: #cc0000; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+

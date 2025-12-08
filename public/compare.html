@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เปรียบเทียบรุ่นรถ | Honda</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="comparestyle.css">
+</head>
+<body>
+    
+    <header>
+        <a href="index.html" class="logo-link">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Honda_Logo.svg" alt="Honda" class="logo-icon">
+        </a>
+        <a href="index.html" class="nav-menu" style="text-decoration:none; display:flex; align-items:center; gap:5px;">
+            <span>&larr;</span> กลับหน้าหลัก
+        </a>
+    </header>
+
+    <div class="compare-container">
+        <h1 class="page-title">เปรียบเทียบสเปกรุ่นรถ</h1>
+        
+        <table id="compare-table" class="compare-table">
+            <thead>
+                <tr>
+                    <th></th> <td id="car1-header" class="car-header">กำลังโหลดข้อมูล...</td>
+                    <td id="car2-header" class="car-header">กำลังโหลดข้อมูล...</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>ราคาจำหน่าย</th>
+                    <td id="price-1" class="price-text">-</td>
+                    <td id="price-2" class="price-text">-</td>
+                </tr>
+                <tr>
+                    <th>ประเภทตัวถัง</th>
+                    <td id="body-1">-</td>
+                    <td id="body-2">-</td>
+                </tr>
+                <tr>
+                    <th>ระบบเครื่องยนต์</th>
+                    <td id="engine-1">-</td>
+                    <td id="engine-2">-</td>
+                </tr>
+                <tr>
+                    <th>แรงม้าสูงสุด (PS)</th>
+                    <td id="hp-1">-</td>
+                    <td id="hp-2">-</td>
+                </tr>
+                <tr>
+                    <th>แรงบิดสูงสุด (Nm)</th>
+                    <td id="torque-1">-</td>
+                    <td id="torque-2">-</td>
+                </tr>
+                <tr>
+                    <th>อัตราสิ้นเปลือง</th>
+                    <td id="fuel-1">-</td>
+                    <td id="fuel-2">-</td>
+                </tr>
+                <tr>
+                    <th>เทคโนโลยีความปลอดภัย</th>
+                    <td id="safety-1" style="font-size:15px; line-height:1.4;">-</td>
+                    <td id="safety-2" style="font-size:15px; line-height:1.4;">-</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="back-btn-container">
+            <button class="btn btn-order" onclick="window.location.href='index.html'" style="padding: 12px 40px; font-size: 16px;">
+                เลือกเปรียบเทียบคู่อื่น
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const ids = urlParams.get('ids');
+
+        async function fetchCompareData() {
+            // 1. ตรวจสอบว่ามี ID ส่งมาไหม
+            if (!ids) { 
+                alert('ไม่พบรหัสรถที่จะเปรียบเทียบ'); 
+                window.location.href = 'index.html'; 
+                return; 
+            }
+
+            try {
+                // 2. เรียก API
+                const res = await fetch(`/api/cars/compare?ids=${ids}`);
+                
+                if (!res.ok) throw new Error('API Error');
+
+                const cars = await res.json();
+
+                // 3. ตรวจสอบข้อมูลที่ได้
+                if (!cars || cars.length < 2) {
+                    alert('ขออภัย ไม่พบข้อมูลรถบางรุ่นที่ท่านเลือก (อาจถูกลบไปแล้ว)');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                // 4. จัดเรียงข้อมูลให้ตรงกับลำดับที่เลือกมา
+                const idList = ids.split(',');
+                const car1 = cars.find(c => c.id == idList[0]);
+                const car2 = cars.find(c => c.id == idList[1]);
+
+                // 5. แสดงผลลงหน้าจอ
+                if (car1) renderCar(1, car1);
+                if (car2) renderCar(2, car2);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('เกิดข้อผิดพลาดในการดึงข้อมูลเปรียบเทียบ');
+                window.location.href = 'index.html';
+            }
+        }
+
+        function renderCar(slot, car) {
+            // ส่วนหัว (รูป + ชื่อ + สโลแกน)
+            const headerHtml = `
+                <img src="${car.image_url}" alt="${car.model_name}">
+                <h2>${car.model_name}</h2>
+                <p>${car.description || ''}</p>
+            `;
+            document.getElementById(`car${slot}-header`).innerHTML = headerHtml;
+
+            // ข้อมูลในตาราง
+            setText(`price-${slot}`, new Intl.NumberFormat('th-TH').format(car.price) + ' บาท');
+            setText(`body-${slot}`, car.body_type);
+            setText(`engine-${slot}`, car.engine_system);
+            setText(`hp-${slot}`, (car.horsepower || '-') + ' PS');
+            setText(`torque-${slot}`, (car.torque || '-') + ' Nm');
+            setText(`fuel-${slot}`, car.consumption || '-');
+            setText(`safety-${slot}`, car.safety_system || '-');
+        }
+
+        // ฟังก์ชันช่วยใส่ข้อความ (Helper Function)
+        function setText(id, text) {
+            const el = document.getElementById(id);
+            if (el) el.innerText = text;
+        }
+
+        // เริ่มทำงาน
+        fetchCompareData();
+    </script>
+</body>
+</html>
