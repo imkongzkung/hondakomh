@@ -55,7 +55,7 @@ const db = mysql.createPool({
     database: process.env.DB_NAME || 'bkksqrrfa1pneuqlzcyc',
     port: process.env.DB_PORT || 3306,
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: 4,
     queueLimit: 0
 });
 
@@ -312,6 +312,7 @@ app.get('/api/visit-count', (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
+
 
 
 
