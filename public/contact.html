@@ -79,6 +79,33 @@
         </div>
 
     </div>
+    <div id="compare-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeCompareModal()">&times;</span>
+            <h2>เปรียบเทียบสเปกรถยนต์</h2>
+            <p>เลือกรุ่นรถที่ต้องการเปรียบเทียบ</p>
+            
+            <div class="compare-selectors">
+                <div class="select-group">
+                    <label>รถรุ่นที่ 1</label>
+                    <select id="select-car-1">
+                        <option value="">-- เลือกรุ่นรถ --</option>
+                    </select>
+                </div>
+
+                <div style="font-weight:bold; font-size:24px; color:#cc0000;">VS</div>
+
+                <div class="select-group">
+                    <label>รถรุ่นที่ 2</label>
+                    <select id="select-car-2">
+                        <option value="">-- เลือกรุ่นรถ --</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-order" style="width:100%; margin-top:20px; font-size:18px;" onclick="confirmCompare()">เริ่มเปรียบเทียบ</button>
+        </div>
+    </div>
 
     <script>
         // --- 1. Auth Logic ---
@@ -259,5 +286,6 @@
 </body>
 
 </html>
+
 
 
