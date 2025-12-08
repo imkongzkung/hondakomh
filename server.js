@@ -41,7 +41,7 @@ const authMiddleware = (req, res, next) => {
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('public'));
+
 
 // ==========================================
 // 3. Database Connection
@@ -313,4 +313,5 @@ app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
 
 });
+
 
