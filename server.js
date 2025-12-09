@@ -205,6 +205,29 @@ app.post('/api/test-drive', authMiddleware, (req, res) => {
     });
 });
 
+// [POST] ยกเลิกการจอง
+app.post('/api/cancel-booking', authMiddleware, (req, res) => {
+    const userId = req.user.id; // ดึง ID คนล็อกอิน
+    const { order_id } = req.body; // รับ ID ของรายการที่จะยกเลิก
+
+    // สั่ง Update สถานะเป็น 'ยกเลิกแล้ว' โดยต้องเป็นของ User คนนั้นจริงๆ
+    const sql = "UPDATE orders SET status = 'ยกเลิกแล้ว' WHERE id = ? AND user_id = ?";
+
+    db.query(sql, [order_id, userId], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ success: false, message: 'Database Error' });
+        }
+
+        // เช็คว่ามีการแก้ไขจริงไหม (ถ้าเป็น 0 แปลว่าหา Order ไม่เจอ หรือไม่ใช่เจ้าของ)
+        if (result.affectedRows === 0) {
+            return res.status(400).json({ success: false, message: 'ไม่พบรายการจอง หรือคุณไม่มีสิทธิ์ยกเลิกรายการนี้' });
+        }
+
+        res.json({ success: true, message: 'ยกเลิกการจองสำเร็จ' });
+    });
+});
+
 // [POST] รับข้อความจากหน้าติดต่อเรา (เก็บลง Database อย่างเดียว)
 app.post('/api/contact', (req, res) => {
     const { name, phone, topic, message } = req.body;
@@ -307,6 +330,7 @@ app.get('/api/visit-count', (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
+
 
 
 
