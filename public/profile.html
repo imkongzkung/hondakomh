@@ -44,77 +44,88 @@
         }
 
         async function loadMyBookings() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
     try {
-        // 1. ดึง Token มาเตรียมไว้
-        const token = localStorage.getItem('token');
-        
-        // ถ้าไม่มี Token ให้ไล่ไป Login
-        if (!token) {
-            alert('กรุณาเข้าสู่ระบบก่อน');
-            window.location.href = 'login.html';
-            return;
-        }
-
-        // 2. [แก้ไขจุดสำคัญ] 
-        // - ลบ ${user.id} ออกจาก URL (เรียกไปที่ /api/my-bookings เฉยๆ)
-        // - เพิ่ม headers Authorization เพื่อส่ง Token
-        const res = await fetch('/api/my-bookings', { 
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token // <--- ต้องมีบรรทัดนี้
-            }
+        const res = await fetch('/api/my-bookings', {
+            headers: { 'Authorization': 'Bearer ' + token }
         });
-
-        // เช็คว่า Server ตอบอะไรกลับมา
-        if (res.status === 401 || res.status === 403) {
-            alert('Session หมดอายุ กรุณา Login ใหม่');
-            window.location.href = 'login.html';
-            return;
-        }
-
-        if(!res.ok) {
-            // ดู Error จริงๆ ว่าคืออะไร
-            const errData = await res.json(); 
-            throw new Error(errData.message || 'Network response was not ok');
-        }
-
         const bookings = await res.json();
+        const container = document.getElementById('booking-list'); // ตรวจสอบ ID ให้ตรงกับ HTML ของคุณ
         
-        // --- ส่วนแสดงผล (เหมือนเดิม) ---
-        const list = document.getElementById('booking-list'); // ตรวจสอบว่าใน HTML มี ID นี้จริงไหม
-        if (!list) return; // กัน Error ถ้าหา Element ไม่เจอ
+        container.innerHTML = ''; // ล้างค่าเก่า
 
-        list.innerHTML = '';
-
-        if(bookings.length === 0) {
-            list.innerHTML = '<p style="text-align:center; color:#666;">คุณยังไม่มีประวัติการจอง</p>';
+        if (bookings.length === 0) {
+            container.innerHTML = '<p>ยังไม่มีประวัติการจอง</p>';
             return;
         }
 
-        bookings.forEach(booking => {
-            // แปลงวันที่
-            const dateObj = new Date(booking.appointment_date);
-            const dateStr = dateObj.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
-            
-            const card = document.createElement('div');
-            card.className = 'booking-card';
-            card.innerHTML = `
-                <h3>🚗 ${booking.car_model}</h3>
-                <div class="booking-info">
-                    <div><strong>สาขา:</strong> ${booking.branch_name}</div>
-                    <div><strong>วันที่:</strong> ${dateStr}</div>
-                    <div><strong>เวลา:</strong> ${booking.appointment_time}</div>
-                    <div style="margin-top:5px; color:#666; font-size:0.9em;">สถานะ: รอยืนยัน</div>
+        bookings.forEach(item => {
+            // เช็คสถานะ: ถ้าเป็น 'ยกเลิกแล้ว' ให้เป็นสีแดง
+            const isCancelled = item.status === 'ยกเลิกแล้ว';
+            const statusColor = isCancelled ? 'red' : 'green';
+            const statusText = item.status || 'จองสำเร็จ'; // เผื่อข้อมูลเก่าไม่มีค่า status
+
+            // ถ้าจองอยู่ ให้โชว์ปุ่มยกเลิก, ถ้ายกเลิกแล้ว ไม่ต้องโชว์ปุ่ม
+            const cancelButton = isCancelled 
+                ? '' 
+                : `<button onclick="cancelBooking(${item.id})" class="btn-cancel" style="background:#cc0000; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-top:10px;">ยกเลิกการจอง</button>`;
+
+            const html = `
+                <div class="booking-card" style="border:1px solid #ddd; padding:15px; margin-bottom:15px; border-radius:8px;">
+                    <h3>🚗 ${item.car_model}</h3>
+                    <p>สาขา: ${item.branch_name}</p>
+                    <p>วันที่: ${new Date(item.appointment_date).toLocaleDateString('th-TH')}</p>
+                    <p>เวลา: ${item.appointment_time}</p>
+                    <p>สถานะ: <strong style="color: ${statusColor};">${statusText}</strong></p>
+                    ${cancelButton}
                 </div>
             `;
-            list.appendChild(card);
+            container.innerHTML += html;
         });
 
-    } catch(err) {
+    } catch (err) {
         console.error(err);
-        alert('ไม่สามารถดึงข้อมูลประวัติการจองได้: ' + err.message);
     }
+}
+
+// ฟังก์ชันกดปุ่มยกเลิก
+function cancelBooking(orderId) {
+    Swal.fire({
+        title: 'ยืนยันการยกเลิก?',
+        text: "คุณต้องการยกเลิกการจองนี้ใช่หรือไม่",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'ใช่, ยกเลิกเลย',
+        cancelButtonText: 'ไม่'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch('/api/cancel-booking', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ order_id: orderId })
+                });
+
+                const data = await res.json();
+                
+                if (data.success) {
+                    Swal.fire('สำเร็จ', 'ยกเลิกการจองเรียบร้อยแล้ว', 'success');
+                    loadMyBookings(); // โหลดรายการใหม่เพื่ออัปเดตสี
+                } else {
+                    Swal.fire('ผิดพลาด', data.message, 'error');
+                }
+            } catch (err) {
+                Swal.fire('Error', 'เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+            }
+        }
+    });
 }
 function logout() {
     Swal.fire({
@@ -140,4 +151,5 @@ function logout() {
 document.addEventListener('DOMContentLoaded', loadMyBookings);
     </script>
 </body>
+
 </html>
